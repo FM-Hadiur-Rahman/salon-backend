@@ -57,13 +57,17 @@ export const createAppointment = asyncHandler(async (req, res) => {
   }
 
   if (contact.includes("@")) {
-    await sendAppointmentConfirmation({
-      to: contact,
-      customerName: name,
-      serviceName: service.name,
-      date,
-      time,
-    });
+    try {
+      await sendAppointmentConfirmation({
+        to: contact,
+        customerName: name,
+        serviceName: service.name,
+        date,
+        time,
+      });
+    } catch (emailError) {
+      console.error("Email send failed:", emailError.message);
+    }
   }
 
   const populated = await Appointment.findById(appointment._id).populate(

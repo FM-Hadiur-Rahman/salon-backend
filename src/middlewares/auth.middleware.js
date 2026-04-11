@@ -3,6 +3,8 @@ import asyncHandler from "express-async-handler";
 import Admin from "../models/Admin.js";
 
 export const protectAdmin = asyncHandler(async (req, res, next) => {
+  console.log("protectAdmin called for:", req.method, req.originalUrl);
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

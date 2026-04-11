@@ -2,9 +2,14 @@ import asyncHandler from "express-async-handler";
 import Service from "../models/Service.js";
 
 export const getServices = asyncHandler(async (req, res) => {
+  console.log("GET /api/services reached controller");
+
   const services = await Service.find({ isActive: true }).sort({
     createdAt: -1,
   });
+
+  console.log("Services found:", services.length);
+
   res.json({ success: true, data: services });
 });
 

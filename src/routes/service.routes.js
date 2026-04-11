@@ -10,7 +10,10 @@ import { protectAdmin } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
+// PUBLIC
 router.get("/", getServices);
+
+// ADMIN
 router.get("/admin/all", protectAdmin, getAdminServices);
 router.post("/", protectAdmin, createService);
 router.put("/:id", protectAdmin, updateService);
