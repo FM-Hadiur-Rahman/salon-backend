@@ -56,26 +56,24 @@ export const createAppointment = asyncHandler(async (req, res) => {
     await coupon.save();
   }
 
-  if (contact.includes("@")) {
-    try {
-      await sendAppointmentConfirmation({
-        to: contact,
-        customerName: name,
-        serviceName: service.name,
-        date,
-        time,
-      });
-    } catch (emailError) {
-      console.error("Email send failed:", emailError.message);
-    }
-  }
-
   const populated = await Appointment.findById(appointment._id).populate(
     "service",
     "name price durationMinutes",
   );
 
   res.status(201).json({ success: true, data: populated });
+
+  if (contact.includes("@")) {
+    sendAppointmentConfirmation({
+      to: contact,
+      customerName: name,
+      serviceName: service.name,
+      date,
+      time,
+    }).catch((emailError) => {
+      console.error("Email send failed:", emailError.message);
+    });
+  }
 });
 
 export const getAppointments = asyncHandler(async (req, res) => {
@@ -112,4 +110,24 @@ export const deleteAppointment = asyncHandler(async (req, res) => {
   }
 
   res.json({ success: true, message: "Appointment deleted" });
+});
+export const getBookedSlotsByDate = asyncHandler(async (req, res) => {
+  const { date } = req.query;
+
+  if (!date) {
+    res.status(400);
+    throw new Error("Date is required");
+  }
+
+  const appointments = await Appointment.find({
+    date,
+    status: { $in: ["pending", "confirmed"] },
+  }).select("time");
+
+  const bookedSlots = appointments.map((item) => item.time);
+
+  res.json({
+    success: true,
+    data: bookedSlots,
+  });
 });

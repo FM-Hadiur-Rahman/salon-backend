@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://frisur-premium.vercel.app",
+    origin: ["http://localhost:5173", "https://frisur-premium.vercel.app"],
     credentials: true,
   }),
 );
