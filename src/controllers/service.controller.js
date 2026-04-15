@@ -4,9 +4,11 @@ import Service from "../models/Service.js";
 export const getServices = asyncHandler(async (req, res) => {
   console.log("GET /api/services reached controller");
 
-  const services = await Service.find({ isActive: true }).sort({
-    createdAt: -1,
-  });
+  const services = await Service.find({ isActive: true })
+    .populate("employeeIds", "name role image isActive")
+    .sort({
+      createdAt: -1,
+    });
 
   console.log("Services found:", services.length);
 
@@ -14,20 +16,29 @@ export const getServices = asyncHandler(async (req, res) => {
 });
 
 export const getAdminServices = asyncHandler(async (req, res) => {
-  const services = await Service.find().sort({ createdAt: -1 });
+  const services = await Service.find()
+    .populate("employeeIds", "name role image isActive")
+    .sort({ createdAt: -1 });
+
   res.json({ success: true, data: services });
 });
 
 export const createService = asyncHandler(async (req, res) => {
   const service = await Service.create(req.body);
-  res.status(201).json({ success: true, data: service });
+
+  const populatedService = await Service.findById(service._id).populate(
+    "employeeIds",
+    "name role image isActive",
+  );
+
+  res.status(201).json({ success: true, data: populatedService });
 });
 
 export const updateService = asyncHandler(async (req, res) => {
   const service = await Service.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
-  });
+  }).populate("employeeIds", "name role image isActive");
 
   if (!service) {
     res.status(404);

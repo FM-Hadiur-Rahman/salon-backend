@@ -12,30 +12,43 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     service: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Service",
       required: true,
     },
+
+    employee: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee",
+      required: false,
+      default: null,
+    },
+
     date: {
       type: String,
       required: true,
+      trim: true,
     },
     time: {
       type: String,
       required: true,
+      trim: true,
     },
+
     message: {
       type: String,
-      default: "",
       trim: true,
+      default: "",
     },
+
     couponCode: {
       type: String,
-      default: "",
-      uppercase: true,
       trim: true,
+      default: "",
     },
+
     originalPrice: {
       type: Number,
       default: 0,
@@ -48,16 +61,16 @@ const appointmentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
     status: {
       type: String,
-      enum: ["pending", "confirmed", "completed", "cancelled"],
+      enum: ["pending", "confirmed", "cancelled", "completed"],
       default: "pending",
     },
   },
   { timestamps: true },
 );
 
-appointmentSchema.index({ date: 1, time: 1 });
-
 const Appointment = mongoose.model("Appointment", appointmentSchema);
+
 export default Appointment;
